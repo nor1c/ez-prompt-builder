@@ -4,9 +4,9 @@ import PromptCategory from "./components/PromptCategory";
 import PromptTextArea from "./components/PromptTextArea";
 
 function App() {
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const handleEndCategoryClick = (key) => {
+  const handleEndCategoryClick = (key: string) => {
     setSelectedItems((prevItems) => {
       if (prevItems.includes(key)) {
         return prevItems.filter((item) => item !== key);

@@ -2,30 +2,35 @@ import { useEffect, useState } from "react";
 
 import data from "../json/prompts.json";
 
-export default function PromptCategory({ onEndCategoryClick, selectedItems }) {
-  const [openItems, setOpenItems] = useState({});
-  const [selectedCounts, setSelectedCounts] = useState({});
-  const [orderMode, setOrderMode] = useState("favcount");
+interface Props {
+  onEndCategoryClick: (key: string) => void;
+  selectedItems: string[];
+}
+
+interface Data {
+  [key: string]: any;
+}
+
+interface Counts {
+  [key: string]: number;
+}
+
+export default function PromptCategory({ onEndCategoryClick, selectedItems }: Props) {
+  const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
+  const [selectedCounts, setSelectedCounts] = useState<Counts>({});
+  const [orderMode, setOrderMode] = useState<string>("favcount");
 
   useEffect(() => {
-    const initialCounts = {};
+    const initialCounts: Counts = {};
     countSelectedItems(data, "", initialCounts);
     setSelectedCounts(initialCounts);
   }, [data, selectedItems]);
 
-  const updateSelectedCounts = (parentKey, count) => {
-    setSelectedCounts((prevCounts) => ({
-      ...prevCounts,
-      [parentKey]: count,
-    }));
-  };
-
-  const toggleItem = (key, hasChildren) => {
+  const toggleItem = (key: string, hasChildren: boolean) => {
     setOpenItems((prevState) => {
       const isOpen = !prevState[key];
       const newState = { ...prevState, [key]: isOpen };
 
-      // If collapsing, remove all descendants from openItems
       if (!isOpen) {
         const keysToRemove = Object.keys(newState).filter((k) => k.startsWith(key + "."));
         keysToRemove.forEach((k) => delete newState[k]);
@@ -34,14 +39,13 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }) {
       return newState;
     });
 
-    // If it's an end category, perform the action
     if (!hasChildren) {
-      const endKey = key.split(".").pop();
+      const endKey = key.split(".").pop() as string;
       onEndCategoryClick(endKey);
     }
   };
 
-  const countSelectedItems = (data, parentKey = "", counts = {}) => {
+  const countSelectedItems = (data: Data, parentKey = "", counts: Counts = {}): number => {
     let totalCount = 0;
 
     Object.keys(data).forEach((key) => {
@@ -51,10 +55,10 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }) {
         totalCount += childCount;
         counts[currentKey] = childCount;
       } else {
-        const endKey = key.split(".").pop();
+        const endKey = key.split(".").pop() as string;
         if (selectedItems.includes(endKey)) {
           totalCount++;
-          counts[currentKey] = 1; // or you can use counts[currentKey] = true;
+          counts[currentKey] = 1;
         } else {
           counts[currentKey] = 0;
         }
@@ -64,14 +68,14 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }) {
     return totalCount;
   };
 
-  const renderList = (data, parentKey = "") => {
+  const renderList = (data: Data, parentKey = "") => {
     return (
       <ul className="ml-4">
         {Object.keys(data).map((key) => {
           const currentKey = parentKey ? `${parentKey}.${key}` : key;
           const isOpen = openItems[currentKey];
           const hasChildren = typeof data[key] === "object" && Object.keys(data[key]).length > 0;
-          const endKey = key.split(".").pop();
+          const endKey = key.split(".").pop() as string;
           const isSelected = selectedItems.includes(endKey);
           const selectedCount = selectedCounts[currentKey] || 0;
           return (
