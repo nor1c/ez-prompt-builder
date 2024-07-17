@@ -83,7 +83,7 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
               <div className="text-sm cursor-pointer hover:underline">
                 <a
                   target="_blank"
-                  href={"https://danbooru.donmai.us/wiki_pages/" + key.replaceAll(" ", "_")}
+                  href={"https://danbooru.donmai.us/wiki_pages/" + key.replace(/ /g, "_")}
                   className="mr-2 text-blue-400 underline"
                 >
                   wiki
@@ -91,11 +91,7 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
                 <a
                   target="_blank"
                   href={
-                    "https://danbooru.donmai.us/posts?tags=" +
-                    key.replaceAll(" ", "_") +
-                    "+order%3A" +
-                    orderMode +
-                    "&z=5"
+                    "https://danbooru.donmai.us/posts?tags=" + key.replace(/ /g, "_") + "+order%3A" + orderMode + "&z=5"
                   }
                   className="mr-6 text-blue-400 underline"
                 >
