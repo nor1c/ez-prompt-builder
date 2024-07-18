@@ -70,7 +70,7 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
 
   const renderList = (data: Data, parentKey = "") => {
     return (
-      <ul className="ml-4">
+      <ul className="ml-2">
         {Object.keys(data).map((key) => {
           const currentKey = parentKey ? `${parentKey}.${key}` : key;
           const isOpen = openItems[currentKey];
@@ -79,12 +79,12 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
           const isSelected = selectedItems.includes(endKey);
           const selectedCount = selectedCounts[currentKey] || 0;
           return (
-            <li className="ml-8" key={currentKey}>
-              <div className="text-sm cursor-pointer hover:underline">
+            <li key={currentKey}>
+              <div className="cursor-pointer  hover:underline">
                 <a
                   target="_blank"
                   href={"https://danbooru.donmai.us/wiki_pages/" + key.replace(/ /g, "_")}
-                  className="mr-2 text-blue-400 underline"
+                  className="text-blue-400 underline "
                 >
                   wiki
                 </a>{" "}
@@ -93,7 +93,7 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
                   href={
                     "https://danbooru.donmai.us/posts?tags=" + key.replace(/ /g, "_") + "+order%3A" + orderMode + "&z=5"
                   }
-                  className="mr-6 text-blue-400 underline"
+                  className="text-blue-400 underline "
                 >
                   posts
                 </a>{" "}
@@ -104,7 +104,7 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
                   {key}
                 </span>
                 {hasChildren && <span className="ml-4">({selectedCount})</span>} {isSelected && "✔"}{" "}
-                {hasChildren && (isOpen ? "---" : "+++")}
+                {hasChildren && (isOpen ? "-" : "+")}
               </div>
               {isOpen && hasChildren && renderList(data[key], currentKey)}
             </li>
@@ -116,8 +116,8 @@ export default function PromptCategory({ onEndCategoryClick, selectedItems }: Pr
 
   return (
     <div>
-      <div className="my-5 text-sm">
-        <span className="mr-2">Order mode:</span>
+      <div className="my-5 ">
+        <span className="mr-2 font-bold">order:</span>
         <button
           className={`${orderMode == "score" ? "underline" : ""} mr-2 hover:underline`}
           onClick={() => setOrderMode("score")}

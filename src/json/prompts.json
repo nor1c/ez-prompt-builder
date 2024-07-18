@@ -10,17 +10,6 @@
     "transparent background": []
   },
   "censorship": {
-    "bar censor": [],
-    "blank censor": [],
-    "blur censor": [],
-    "glitch censor": [],
-    "heart censor": [],
-    "light censor": [],
-    "scribble censor": [],
-    "checkered censor": [],
-    "pointless censorhip": [],
-    "transparent censoring": [],
-    "censored background": [],
     "explicit body parts": {
       "censored anus": [],
       "censored nipples": [],
@@ -41,7 +30,18 @@
       "smoke censor": [],
       "tail censor": [],
       "tentacle censor": []
-    }
+    },
+    "bar censor": [],
+    "blank censor": [],
+    "blur censor": [],
+    "glitch censor": [],
+    "heart censor": [],
+    "light censor": [],
+    "scribble censor": [],
+    "checkered censor": [],
+    "pointless censorhip": [],
+    "transparent censoring": [],
+    "censored background": []
   },
   "colors": {
     "greyscale": [],
@@ -61,16 +61,16 @@
     "thigh focus": []
   },
   "lighting": {
-    "backlighting": [],
-    "sidelighting": [],
-    "underlighting": [],
     "light source": {
       "sun": [],
       "lamp": [],
       "wall lamp": [],
       "desk lamp": [],
       "ceiling light": []
-    }
+    },
+    "backlighting": [],
+    "sidelighting": [],
+    "underlighting": []
   },
   "body": {
     "hair": {
@@ -1378,6 +1378,17 @@
     "mole on vagina": [],
     "mole on ass": []
   },
+  "cum": {
+    "cum on face": [],
+    "cum in mouth": [],
+    "cum in nose": [],
+    "cum on tounge": [],
+    "cum on breasts": [],
+    "cum in ass": [],
+    "cum on ass": [],
+    "cum in pussy": [],
+    "cum on pussy": []
+  },
   "actions": {
     "hand/arm/shoulder": {
       "Arm around neck": [],
@@ -1409,17 +1420,6 @@
       "naizuri": {
         "naizuri": [],
         "cooperative naizuri": []
-      },
-      "cum": {
-        "cum on face": [],
-        "cum in mouth": [],
-        "cum in nose": [],
-        "cum on tounge": [],
-        "cum on breasts": [],
-        "cum in ass": [],
-        "cum on ass": [],
-        "cum in pussy": [],
-        "cum on pussy": []
       },
       "penis to breast": [],
       "penis under breasts": [],
