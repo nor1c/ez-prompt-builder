@@ -17,7 +17,7 @@ function App() {
   };
 
   return (
-    <div className="w-full px-2 mx-auto mt-10 text-xs md:px-10 md:text-sm">
+    <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
       <PromptTextArea selectedItems={selectedItems} />
 
       <div className="mt-10">
