@@ -18,7 +18,7 @@ export default function PromptTextArea({ selectedItems }: Props) {
       ></textarea>
 
       <div className="right-0 w-full mt-2 text-right">
-        <button onClick={handleCopyToClipboard} className="p-2 text-xs bg-gray-200 rounded-md hover:bg-gray-300">
+        <button onClick={handleCopyToClipboard} className="p-2 text-xs bg-blue-200 rounded-md hover:bg-gray-300">
           COPY
         </button>
       </div>
