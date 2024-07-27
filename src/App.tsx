@@ -18,10 +18,8 @@ function App() {
   };
 
   const formatBadTag = () => {
-    const formattedText = badTag
-      .split(" ")
-      .map((tag) => tag.replace("_", " "))
-      .join(", ");
+    const formattedText = Array.from(new Set(badTag.split(" ").map((tag) => tag.replace(/_/g, " ")))).join(", ");
+
     setBadTag(formattedText);
   };
 
