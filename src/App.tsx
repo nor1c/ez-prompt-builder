@@ -23,6 +23,15 @@ function App() {
     setBadTag(formattedText);
   };
 
+  const clearTag = () => {
+    setBadTag("");
+  };
+
+  const pasteFromClipboard = async () => {
+    const clipboardText = await navigator.clipboard.readText();
+    setBadTag((prevText) => prevText + clipboardText);
+  };
+
   const addBreakLine = () => {
     const formattedText =
       badTag
@@ -41,16 +50,6 @@ function App() {
 
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
-      <PromptTextArea selectedItems={selectedItems} />
-
-      <div className="mt-10">
-        <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Select desired prompt:</label>
-
-        <div className="p-2 rounded-md bg-gray-50">
-          <PromptCategory onEndCategoryClick={handleEndCategoryClick} selectedItems={selectedItems} />
-        </div>
-      </div>
-
       <div className="mt-16">
         <h5 className="mb-2 font-semibold text-md">Bad Tag Formatter</h5>
         <textarea
@@ -61,15 +60,31 @@ function App() {
           placeholder="Enter your bad tag"
         />
         <div className="right-0 w-full mt-2 space-x-2 text-right">
-          <button onClick={formatBadTag} className="p-2 text-xs bg-gray-200 rounded-md hover:bg-gray-300">
+          <button onClick={clearTag} className="p-2 text-xs bg-red-200 rounded-md hover:bg-gray-300">
+            CLEAR
+          </button>
+          <button onClick={pasteFromClipboard} className="p-2 text-xs bg-blue-200 rounded-md hover:bg-gray-300">
+            PASTE
+          </button>
+          <button onClick={formatBadTag} className="p-2 text-xs bg-green-200 rounded-md hover:bg-gray-300">
             FORMAT
           </button>
-          <button onClick={addBreakLine} className="p-2 text-xs bg-gray-200 rounded-md hover:bg-gray-300">
+          {/* <button onClick={addBreakLine} className="p-2 text-xs bg-gray-200 rounded-md hover:bg-gray-300">
             ADD BREAK
-          </button>
-          <button onClick={copyFormattedBadTag} className="p-2 text-xs bg-blue-200 rounded-md hover:bg-gray-300">
+          </button> */}
+          <button onClick={copyFormattedBadTag} className="p-2 text-xs bg-blue-300 rounded-md hover:bg-gray-300">
             COPY
           </button>
+        </div>
+      </div>
+
+      <PromptTextArea selectedItems={selectedItems} />
+
+      <div className="mt-10">
+        <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Select desired prompt:</label>
+
+        <div className="p-2 rounded-md bg-gray-50">
+          <PromptCategory onEndCategoryClick={handleEndCategoryClick} selectedItems={selectedItems} />
         </div>
       </div>
 
