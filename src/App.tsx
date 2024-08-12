@@ -32,17 +32,17 @@ function App() {
     setBadTag((prevText) => prevText + clipboardText);
   };
 
-  const addBreakLine = () => {
-    const formattedText =
-      badTag
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag)
-        .join(",\n") + ",";
-    setBadTag(formattedText);
+  // const addBreakLine = () => {
+  //   const formattedText =
+  //     badTag
+  //       .split(",")
+  //       .map((tag) => tag.trim())
+  //       .filter((tag) => tag)
+  //       .join(",\n") + ",";
+  //   setBadTag(formattedText);
 
-    setBadTag(formattedText);
-  };
+  //   setBadTag(formattedText);
+  // };
 
   const copyFormattedBadTag = () => {
     navigator.clipboard.writeText(badTag);
