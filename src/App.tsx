@@ -17,35 +17,35 @@ function App() {
     });
   };
 
-  const formatBadTag = () => {
-    const formattedText = Array.from(new Set(badTag.split(" ").map((tag) => tag.replace(/_/g, " ")))).join(", ");
-
-    setBadTag(formattedText);
-  };
-
   const clearTag = () => {
+    console.log("tag cleared");
     setBadTag("");
   };
 
   const pasteFromClipboard = async () => {
+    console.log("pasted");
     const clipboardText = await navigator.clipboard.readText();
     setBadTag((prevText) => prevText + clipboardText);
   };
 
-  // const addBreakLine = () => {
-  //   const formattedText =
-  //     badTag
-  //       .split(",")
-  //       .map((tag) => tag.trim())
-  //       .filter((tag) => tag)
-  //       .join(",\n") + ",";
-  //   setBadTag(formattedText);
-
-  //   setBadTag(formattedText);
-  // };
+  const formatBadTag = () => {
+    setBadTag((prevTag: string) => {
+      const formatted = Array.from(new Set(prevTag.split(" ").map((tag) => tag.replace(/_/g, " ")))).join(", ") + ",";
+      navigator.clipboard.writeText(formatted);
+      return formatted;
+    });
+  };
 
   const copyFormattedBadTag = () => {
     navigator.clipboard.writeText(badTag);
+  };
+
+  const doAll = async () => {
+    clearTag();
+    await pasteFromClipboard();
+    formatBadTag();
+
+    copyFormattedBadTag();
   };
 
   return (
@@ -69,11 +69,15 @@ function App() {
           <button onClick={formatBadTag} className="p-2 text-xs bg-green-200 rounded-md hover:bg-gray-300">
             FORMAT
           </button>
-          {/* <button onClick={addBreakLine} className="p-2 text-xs bg-gray-200 rounded-md hover:bg-gray-300">
-            ADD BREAK
-          </button> */}
           <button onClick={copyFormattedBadTag} className="p-2 text-xs bg-blue-300 rounded-md hover:bg-gray-300">
             COPY
+          </button>
+
+          <button
+            onClick={doAll}
+            className="p-2 text-xs font-bold text-white bg-purple-500 rounded-md hover:bg-purple-700"
+          >
+            DO ALL
           </button>
         </div>
       </div>
