@@ -50,7 +50,7 @@ function App() {
 
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
-      <div className="mt-16">
+      <div className="mt-16 mb-12">
         <h5 className="mb-2 font-semibold text-md">Bad Tag Formatter</h5>
         <textarea
           rows={5}
@@ -59,25 +59,34 @@ function App() {
           onChange={(e) => setBadTag(e.target.value)}
           placeholder="Enter your bad tag"
         />
-        <div className="right-0 w-full mt-2 space-x-2 text-right">
-          <button onClick={clearTag} className="p-2 text-xs bg-red-200 rounded-md hover:bg-gray-300">
+        <div className="right-0 w-full mt-2 space-x-2 text-center">
+          {/* <button onClick={clearTag} className="px-6 py-4 text-xs font-medium bg-red-200 rounded-md hover:bg-gray-300">
             CLEAR
           </button>
-          <button onClick={pasteFromClipboard} className="p-2 text-xs bg-blue-200 rounded-md hover:bg-gray-300">
+          <button
+            onClick={pasteFromClipboard}
+            className="px-6 py-4 text-xs font-medium bg-blue-200 rounded-md hover:bg-gray-300"
+          >
             PASTE
           </button>
-          <button onClick={formatBadTag} className="p-2 text-xs bg-green-200 rounded-md hover:bg-gray-300">
+          <button
+            onClick={formatBadTag}
+            className="px-6 py-4 text-xs font-medium bg-green-200 rounded-md hover:bg-gray-300"
+          >
             FORMAT
           </button>
-          <button onClick={copyFormattedBadTag} className="p-2 text-xs bg-blue-300 rounded-md hover:bg-gray-300">
+          <button
+            onClick={copyFormattedBadTag}
+            className="px-6 py-4 text-xs font-medium bg-blue-300 rounded-md hover:bg-gray-300"
+          >
             COPY
-          </button>
+          </button> */}
 
           <button
             onClick={doAll}
-            className="p-2 text-xs font-bold text-white bg-purple-500 rounded-md hover:bg-purple-700"
+            className="px-6 py-4 text-xs font-medium text-white bg-purple-500 rounded-md hover:bg-purple-700"
           >
-            DO ALL
+            BOOM
           </button>
         </div>
       </div>
