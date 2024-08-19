@@ -18,19 +18,19 @@ function App() {
   };
 
   const clearTag = () => {
-    console.log("tag cleared");
     setBadTag("");
   };
 
   const pasteFromClipboard = async () => {
-    console.log("pasted");
     const clipboardText = await navigator.clipboard.readText();
     setBadTag((prevText) => prevText + clipboardText);
   };
 
   const formatBadTag = () => {
     setBadTag((prevTag: string) => {
-      const formatted = Array.from(new Set(prevTag.split(" ").map((tag) => tag.replace(/_/g, " ")))).join(", ") + ",";
+      const formatted =
+        Array.from(new Set(prevTag.split(" ").map((tag) => tag.replace(/_/g, " ").replace(/boom/g, "")))).join(", ") +
+        ",";
       navigator.clipboard.writeText(formatted);
       return formatted;
     });
