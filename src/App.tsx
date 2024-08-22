@@ -28,9 +28,37 @@ function App() {
 
   const formatBadTag = () => {
     setBadTag((prevTag: string) => {
-      const formatted =
-        Array.from(new Set(prevTag.split(" ").map((tag) => tag.replace(/_/g, " ").replace(/boom/g, "")))).join(", ") +
-        ",";
+      const formatted = Array.from(
+        new Set(
+          prevTag
+            .split(" ")
+            .map((tag) =>
+              tag
+                .replace(/_/g, " ")
+                .replace(/censored/g, "")
+                .replace(/blur censor/g, "")
+                .replace(/mosaic censoring/g, "")
+                .replace(/bar censor/g, "")
+                .replace(/absurdres/g, "")
+                .replace(/highres/g, "")
+                .replace(/commentary/g, "")
+                .replace(/commentary request/g, "")
+                .replace(/original/g, "")
+                .replace(/signature/g, "")
+                .replace(/fanbox username/g, "")
+                .replace(/username/g, "")
+                .replace(/watermark/g, "")
+                .replace(/patreon username/g, "")
+                .replace(/patreon logo/g, "")
+                .replace(/big hair/g, "")
+                .replace(/artist name/g, "")
+                .replace(/web address/g, "")
+                .replace(/huge breasts/g, "large breasts")
+            )
+            .filter((tag) => tag.trim() !== "")
+        )
+      ).join(", ");
+
       navigator.clipboard.writeText(formatted);
       return formatted;
     });
