@@ -1,7 +1,6 @@
+import { saveAs } from "file-saver";
+import JSZip from "jszip";
 import { useState } from "react";
-
-import PromptCategory from "./components/PromptCategory";
-import PromptTextArea from "./components/PromptTextArea";
 
 function App() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -76,6 +75,108 @@ function App() {
     copyFormattedBadTag();
   };
 
+  const [cleanedImage, setCleanedImage] = useState<string | null>(null);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        img.onload = function () {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            // Set canvas size to match the image
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Draw the image onto the canvas (this will remove metadata)
+            ctx.drawImage(img, 0, 0);
+
+            // Convert canvas back to an image file, stripping all metadata
+            canvas.toBlob(
+              function (blob) {
+                if (blob) {
+                  const cleanedImageURL = URL.createObjectURL(blob);
+                  setCleanedImage(cleanedImageURL);
+                }
+              },
+              "image/jpeg",
+              1.0
+            );
+          }
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // batch exif cleaner
+  const [cleanedImages, setCleanedImages] = useState<{ name: string; url: string }[]>([]);
+
+  const handleFilesSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const imagePromises = Array.from(files).map((file) => processImage(file));
+      const processedImages = await Promise.all(imagePromises);
+      setCleanedImages(processedImages);
+    }
+  };
+
+  const processImage = (file: File): Promise<{ name: string; url: string }> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        img.onload = function () {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            // Set canvas size to match the image
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Draw the image onto the canvas (this will remove metadata)
+            ctx.drawImage(img, 0, 0);
+
+            // Convert canvas back to an image file, stripping all metadata
+            canvas.toBlob(
+              function (blob) {
+                if (blob) {
+                  const cleanedImageURL = URL.createObjectURL(blob);
+                  resolve({ name: file.name, url: cleanedImageURL });
+                }
+              },
+              "image/jpeg",
+              1.0
+            );
+          }
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleDownloadAll = async () => {
+    const zip = new JSZip();
+
+    cleanedImages.forEach((image) => {
+      const imageName = image.name.replace(/\.[^/.]+$/, "") + "_cleaned.jpg";
+      zip.file(
+        imageName,
+        fetch(image.url).then((res) => res.blob())
+      );
+    });
+
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, "cleaned_images.zip");
+  };
+
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
       <div className="mt-16 mb-12">
@@ -119,7 +220,33 @@ function App() {
         </div>
       </div>
 
-      <PromptTextArea selectedItems={selectedItems} />
+      <div>
+        <label className="block mb-2 text-base font-medium text-gray-900 dark:text-white">[EXIF Cleaner]</label>
+
+        <div className="p-2 rounded-md bg-gray-50">
+          <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Single</label>
+
+          <input type="file" accept="image/*" onChange={handleFileSelect} />
+
+          {cleanedImage && (
+            <a href={cleanedImage} download="cleaned_image.jpg">
+              Download Cleaned Image
+            </a>
+          )}
+        </div>
+
+        <div className="p-2 mt-5 rounded-md bg-gray-50">
+          <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Batch</label>
+
+          <input type="file" accept="image/*" onChange={handleFilesSelect} multiple />
+          <br />
+          <br />
+
+          {cleanedImages.length > 0 && <button onClick={handleDownloadAll}>Download All Cleaned Images</button>}
+        </div>
+      </div>
+
+      {/* <PromptTextArea selectedItems={selectedItems} />
 
       <div className="mt-10">
         <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Select desired prompt:</label>
@@ -127,7 +254,7 @@ function App() {
         <div className="p-2 rounded-md bg-gray-50">
           <PromptCategory onEndCategoryClick={handleEndCategoryClick} selectedItems={selectedItems} />
         </div>
-      </div>
+      </div> */}
 
       <div className="mt-20"></div>
     </div>
