@@ -221,7 +221,9 @@ function App() {
       </div>
 
       <div>
-        <label className="block mb-2 text-base font-medium text-gray-900 dark:text-white">[EXIF Cleaner]</label>
+        <label className="block mb-2 text-base font-medium text-gray-900 dark:text-white">
+          EXIF Cleaner (works on client-side, no file stored to server)
+        </label>
 
         <div className="p-2 rounded-md bg-gray-50">
           <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Single</label>
