@@ -230,35 +230,6 @@ function App() {
     return newText;
   };
 
-  const extractCustomMetadata = (text: string): any => {
-    const customTags: any = {};
-
-    // Patterns to capture prompts and other metadata
-    const patterns = [
-      /Prompt:\s*([\s\S]*?)(?=\n|$)/gi, // Positive prompt
-      /Negative prompt:\s*([\s\S]*?)(?=\n|$)/gi, // Negative prompt
-      /Steps:\s*([\d]+)/gi, // Steps
-      /Sampler:\s*([\w\s]+)/gi, // Sampler
-      /CFG scale:\s*([\d.]+)/gi, // CFG Scale
-      /Seed:\s*([\d]+)/gi, // Seed
-      /Size:\s*([\d+x\d+])/gi, // Size
-      /Model hash:\s*([\w\d]+)/gi, // Model Hash
-      /Model:\s*([\w\d]+)/gi, // Model
-    ];
-
-    patterns.forEach((pattern, index) => {
-      let match;
-      while ((match = pattern.exec(text)) !== null) {
-        // Extract key and value from the match
-        const key = `CustomMetadata_${index + 1}`;
-        const value = match[1].trim();
-        customTags[key] = value;
-      }
-    });
-
-    return customTags;
-  };
-
   const formatMetadata = (data: any): string => {
     return data
       .toString()
