@@ -226,25 +226,65 @@ function App() {
         </label>
 
         <div className="p-2 rounded-md bg-gray-50">
-          <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Single</label>
+          <label className="block font-medium text-gray-900 text-md dark:text-white">Single</label>
 
-          <input type="file" accept="image/*" onChange={handleFileSelect} />
+          <div className="flex flex-row gap-2 mt-4">
+            <label>
+              <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" id="file-input" />
+              <label
+                htmlFor="file-input"
+                className="px-3 py-2 text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600"
+              >
+                Select Images
+              </label>
+            </label>
 
-          {cleanedImage && (
-            <a href={cleanedImage} download="cleaned_image.jpg">
-              Download Cleaned Image
-            </a>
-          )}
+            <label>
+              {cleanedImage && (
+                <a
+                  href={cleanedImage}
+                  download="cleaned_image.jpg"
+                  className="px-3 py-2 text-white bg-green-500 rounded cursor-pointer hover:bg-green-600"
+                >
+                  Download Cleaned Image
+                </a>
+              )}
+            </label>
+          </div>
         </div>
 
         <div className="p-2 mt-5 rounded-md bg-gray-50">
-          <label className="block mb-2 font-medium text-gray-900 text-md dark:text-white">Batch</label>
+          <label className="block font-medium text-gray-900 text-md dark:text-white">Batch</label>
 
-          <input type="file" accept="image/*" onChange={handleFilesSelect} multiple />
-          <br />
-          <br />
+          <div className="flex flex-row gap-2 mt-4">
+            <label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFilesSelect}
+                multiple
+                className="hidden"
+                id="files-input"
+              />
+              <label
+                htmlFor="files-input"
+                className="px-3 py-2 text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600"
+              >
+                Select Images
+              </label>
+            </label>
 
-          {cleanedImages.length > 0 && <button onClick={handleDownloadAll}>Download All Cleaned Images</button>}
+            <label>
+              {cleanedImages.length > 0 && (
+                <a
+                  onClick={handleDownloadAll}
+                  className="px-3 py-2 text-white bg-green-500 rounded cursor-pointer hover:bg-green-600"
+                >
+                  Download All Cleaned Images
+                </a>
+              )}
+            </label>
+          </div>
         </div>
       </div>
 
