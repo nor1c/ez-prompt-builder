@@ -3,18 +3,18 @@ import JSZip from "jszip";
 import { useState } from "react";
 
 function App() {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  // const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [badTag, setBadTag] = useState<string>("");
 
-  const handleEndCategoryClick = (key: string) => {
-    setSelectedItems((prevItems) => {
-      if (prevItems.includes(key)) {
-        return prevItems.filter((item) => item !== key);
-      } else {
-        return [...prevItems, key];
-      }
-    });
-  };
+  // const handleEndCategoryClick = (key: string) => {
+  //   setSelectedItems((prevItems) => {
+  //     if (prevItems.includes(key)) {
+  //       return prevItems.filter((item) => item !== key);
+  //     } else {
+  //       return [...prevItems, key];
+  //     }
+  //   });
+  // };
 
   const clearTag = () => {
     setBadTag("");
