@@ -104,7 +104,7 @@ function App() {
                   setCleanedImage(cleanedImageURL);
                 }
               },
-              "image/jpeg",
+              "image/png",
               1.0
             );
           }
@@ -152,7 +152,7 @@ function App() {
                   resolve({ name: file.name, url: cleanedImageURL });
                 }
               },
-              "image/jpeg",
+              "image/png",
               1.0
             );
           }
@@ -166,7 +166,7 @@ function App() {
     const zip = new JSZip();
 
     cleanedImages.forEach((image) => {
-      const imageName = image.name.replace(/\.[^/.]+$/, "") + "_cleaned.jpg";
+      const imageName = image.name.replace(/\.[^/.]+$/, "") + "_cleaned.png";
       zip.file(
         imageName,
         fetch(image.url).then((res) => res.blob())
@@ -175,6 +175,96 @@ function App() {
 
     const content = await zip.generateAsync({ type: "blob" });
     saveAs(content, "cleaned_images.zip");
+  };
+
+  // EXIF Reader
+  const [metadata, setMetadata] = useState<string | null>(null);
+
+  const handleExifFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setMetadata(null); // Clear previous metadata
+      try {
+        // Read the file as binary data
+        const arrayBuffer = await file.arrayBuffer();
+        const text = cleanText(new TextDecoder().decode(new Uint8Array(arrayBuffer)));
+
+        if (text) {
+          setMetadata(formatMetadata(text));
+        } else {
+          setMetadata("No custom metadata found.");
+        }
+      } catch (error) {
+        console.error("Error reading metadata:", error);
+        setMetadata("Could not read metadata.");
+      }
+    }
+  };
+
+  // Function to clean the text, removing unwanted characters
+  const cleanText = (text: string): string => {
+    // Find the index of the first '<' character
+    const startIndex = text.indexOf("<");
+
+    // If '<' is found, extract text from that point onward
+    if (startIndex !== -1) {
+      text = text.substring(startIndex);
+    }
+
+    // Truncate text after the first occurrence of 'TI:'
+    const marker = "TI:";
+    const markerIndex = text.indexOf(marker);
+
+    if (markerIndex !== -1) {
+      text = text.substring(0, markerIndex + text.substring(markerIndex).indexOf("\n"));
+    }
+
+    // Remove non-printable characters and trim excessive whitespace
+    const newText =
+      "Prompt:" +
+      text
+        .replace(/[^\x20-\x7E]/g, "") // Remove non-printable ASCII characters
+        .replace(/\s{2,}/g, " ") // Replace multiple spaces with a single space
+        .trim();
+
+    return newText;
+  };
+
+  const extractCustomMetadata = (text: string): any => {
+    const customTags: any = {};
+
+    // Patterns to capture prompts and other metadata
+    const patterns = [
+      /Prompt:\s*([\s\S]*?)(?=\n|$)/gi, // Positive prompt
+      /Negative prompt:\s*([\s\S]*?)(?=\n|$)/gi, // Negative prompt
+      /Steps:\s*([\d]+)/gi, // Steps
+      /Sampler:\s*([\w\s]+)/gi, // Sampler
+      /CFG scale:\s*([\d.]+)/gi, // CFG Scale
+      /Seed:\s*([\d]+)/gi, // Seed
+      /Size:\s*([\d+x\d+])/gi, // Size
+      /Model hash:\s*([\w\d]+)/gi, // Model Hash
+      /Model:\s*([\w\d]+)/gi, // Model
+    ];
+
+    patterns.forEach((pattern, index) => {
+      let match;
+      while ((match = pattern.exec(text)) !== null) {
+        // Extract key and value from the match
+        const key = `CustomMetadata_${index + 1}`;
+        const value = match[1].trim();
+        customTags[key] = value;
+      }
+    });
+
+    return customTags;
+  };
+
+  const formatMetadata = (data: any): string => {
+    return data
+      .toString()
+      .replaceAll("Prompt:", "Prompt: ")
+      .replaceAll("Negative prompt", "\n\nNegative prompt")
+      .replaceAll("Steps", "\n\nSteps");
   };
 
   return (
@@ -220,10 +310,10 @@ function App() {
         </div>
       </div>
 
+      <hr className="mb-10 border-red-500" />
+
       <div>
-        <label className="block mb-2 text-base font-medium text-gray-900 dark:text-white">
-          EXIF Cleaner (works on client-side, no file stored to server)
-        </label>
+        <label className="block mb-2 text-base font-medium text-gray-900 dark:text-white">EXIF Cleaner</label>
 
         <div className="p-2 rounded-md bg-gray-50">
           <label className="block font-medium text-gray-900 text-md dark:text-white">Single</label>
@@ -243,7 +333,7 @@ function App() {
               {cleanedImage && (
                 <a
                   href={cleanedImage}
-                  download="cleaned_image.jpg"
+                  download="cleaned_image.png"
                   className="px-3 py-2 text-white bg-green-500 rounded cursor-pointer hover:bg-green-600"
                 >
                   Download Cleaned Image
@@ -284,6 +374,41 @@ function App() {
                 </a>
               )}
             </label>
+          </div>
+        </div>
+      </div>
+
+      <hr className="mt-10 mb-10 border-red-500" />
+
+      <div>
+        <label className="block mt-10 mb-2 text-base font-medium text-gray-900 dark:text-white">EXIF Reader</label>
+
+        <div className="p-2 rounded-md bg-gray-50">
+          <div className="mt-2">
+            <label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleExifFileSelect}
+                className="hidden"
+                id="exif-read-file"
+              />
+              <label
+                htmlFor="exif-read-file"
+                className="px-3 py-2 text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600"
+              >
+                Select Images
+              </label>
+            </label>
+          </div>
+
+          <div className="w-full max-w-lg p-4 mt-4 bg-white rounded shadow">
+            <h2 className="mb-4 text-xl font-semibold">Metadata Information</h2>
+            {metadata ? (
+              <pre className="whitespace-pre-wrap">{metadata}</pre>
+            ) : (
+              <p>No metadata available. Please upload an image.</p>
+            )}
           </div>
         </div>
       </div>
