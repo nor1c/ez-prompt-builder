@@ -231,11 +231,26 @@ function App() {
   };
 
   const formatMetadata = (data: any): string => {
-    return data
-      .toString()
-      .replaceAll("Prompt:", "Prompt: ")
-      .replaceAll("Negative prompt", "\n\nNegative prompt")
-      .replaceAll("Steps", "\n\nSteps");
+    return data.toString().includes("Negative prompt")
+      ? keepTextBeforeKeyword(
+          data
+            .toString()
+            .replaceAll("Prompt:", "Prompt: ")
+            .replaceAll("Negative prompt", "\n\nNegative prompt")
+            .replaceAll("Steps", "\n\nSteps"),
+          "Lora hashes"
+        )
+      : "none";
+  };
+
+  const keepTextBeforeKeyword = (text: string, keyword: string): string => {
+    const index = text.indexOf(keyword);
+
+    if (index !== -1) {
+      return text.substring(0, index + keyword.length);
+    }
+
+    return text;
   };
 
   return (
