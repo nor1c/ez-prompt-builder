@@ -311,7 +311,7 @@ function App() {
                 htmlFor="file-input"
                 className="px-3 py-2 text-white bg-blue-500 rounded cursor-pointer hover:bg-blue-600"
               >
-                Select Images
+                Select Image
               </label>
             </label>
 
