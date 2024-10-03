@@ -31,6 +31,7 @@ function App() {
         "censored",
         "blur censor",
         "mosaic censoring",
+        "convenient censoring",
         "bar censor",
         "shiny skin",
         "shiny hair",
@@ -331,6 +332,43 @@ function App() {
     return text;
   };
 
+  const [csvData, setCsvData] = useState(null);
+
+  // Function to handle file upload
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const text = e.target.result;
+      setCsvData(text);
+    };
+
+    reader.readAsText(file);
+  };
+
+  // Function to generate .txt files and zip them
+  const generateZipFile = () => {
+    if (!csvData) return;
+
+    const zip = new JSZip();
+    const rows = csvData.split("\n");
+
+    rows.forEach((row) => {
+      const columns = row.split(",");
+      const fileName = `${columns[0]}.txt`;
+      const content = columns.slice(1).join(",").replace(/^"|"$/g, ""); // Remove quotes around the second column
+
+      // Add each .txt file to the zip archive
+      zip.file(fileName, content);
+    });
+
+    // Generate the zip file and download it
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      saveAs(content, "text_files.zip"); // Download the zip file
+    });
+  };
+
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
       <div className="mt-16 mb-12">
@@ -486,6 +524,12 @@ function App() {
           <PromptCategory onEndCategoryClick={handleEndCategoryClick} selectedItems={selectedItems} />
         </div>
       </div> */}
+
+      <div className="mt-10">
+        <h1>CSV to Text Files</h1>
+        <input type="file" accept=".csv" onChange={handleFileUpload} />
+        <button onClick={generateZipFile}>Generate Text Files</button>
+      </div>
 
       <div className="mt-20"></div>
     </div>
