@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-escape */
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { useState } from "react";
@@ -28,111 +27,112 @@ function App() {
 
   const formatBadTag = () => {
     setBadTag((prevTag: string) => {
+      const unwantedWords = [
+        "censored",
+        "blur censor",
+        "mosaic censoring",
+        "bar censor",
+        "shiny skin",
+        "shiny hair",
+        "simple background",
+        "white background",
+        "female pubic hair",
+        "male pubic hair",
+        "mole under eye",
+        "symbol-shaped pupils",
+        "cum in pussy",
+        "pointy ears",
+        "hair ornament",
+        "collarbone",
+        "elf",
+        "puffy nipples",
+        "inverted nipples",
+        "jewelry",
+        "hair ribbon",
+        "side braid",
+        "hairclip",
+        "french braid",
+        "absurdres",
+        "highres",
+        "commentary",
+        "commentary request",
+        "original",
+        "signature",
+        "fanbox username",
+        "username",
+        "watermark",
+        "patreon username",
+        "patreon logo",
+        "big hair",
+        "artist name",
+        "web address",
+        "small breasts",
+        "medium breasts",
+        "large breasts",
+        "huge breasts",
+        "short hair",
+        "medium hair",
+        "very long hair",
+        "blonde hair",
+        "brown hair",
+        "black hair",
+        "blue hair",
+        "red hair",
+        "green hair",
+        "purple hair",
+        "pink hair",
+        "white hair",
+        "silver hair",
+        "orange hair",
+        "gray hair",
+        "yellow hair",
+        "multicolored hair",
+        "gradient hair",
+        "rainbow hair",
+        "turquoise hair",
+        "aqua hair",
+        "lavender hair",
+        "indigo hair",
+        "blue eyes",
+        "brown eyes",
+        "green eyes",
+        "red eyes",
+        "yellow eyes",
+        "purple eyes",
+        "pink eyes",
+        "black eyes",
+        "orange eyes",
+        "gray eyes",
+        "aqua eyes",
+        "golden eyes",
+        "silver eyes",
+        "multicolored eyes",
+        "rainbow eyes",
+        "white eyes",
+        "amber eyes",
+        "turquoise eyes",
+        "lavender eyes",
+        "heterochromia",
+        "long hair",
+        "patreon",
+        "dark skin",
+        "sweat",
+        "shiny",
+        "pubic hair",
+        "mole",
+        "cum",
+        "bangs",
+        "braid",
+        "un",
+      ];
+
       const formatted = Array.from(
         new Set(
           prevTag
             .split(" ")
-            .map((tag) =>
-              tag
-                .replace(/_/g, " ")
-                .replace(/\censored/g, "")
-                .replace(/\blur censor/g, "")
-                .replace(/\mosaic censoring/g, "")
-                .replace(/\bar censor/g, "")
-                .replace(/\shiny skin/g, "")
-                .replace(/\shiny hair/g, "")
-                .replace(/\simple background/g, "")
-                .replace(/\white background/g, "")
-                .replace(/\female pubic hair/g, "")
-                .replace(/\male pubic hair/g, "")
-                .replace(/\mole under eye/g, "")
-                .replace(/\symbol-shaped pupils/g, "")
-                .replace(/\cum in pussy/g, "")
-                .replace(/\pointy ears/g, "")
-                .replace(/\hair ornament/g, "")
-                .replace(/\collarbone/g, "")
-                .replace(/\elf/g, "")
-                .replace(/\puffy nipples/g, "")
-                .replace(/\inverted nipples/g, "")
-                .replace(/\jewelry/g, "")
-                .replace(/\hair ribbon/g, "")
-                .replace(/\side braid/g, "")
-                .replace(/\hairclip/g, "")
-                .replace(/\french braid/g, "")
-                .replace(/\absurdres/g, "")
-                .replace(/\highres/g, "")
-                .replace(/\commentary/g, "")
-                .replace(/\commentary request/g, "")
-                .replace(/\original/g, "")
-                .replace(/\signature/g, "")
-                .replace(/\fanbox username/g, "")
-                .replace(/\username/g, "")
-                .replace(/\watermark/g, "")
-                .replace(/\patreon username/g, "")
-                .replace(/\patreon logo/g, "")
-                .replace(/\big hair/g, "")
-                .replace(/\artist name/g, "")
-                .replace(/\web address/g, "")
-                .replace(/\small breasts/g, "")
-                .replace(/\medium breasts/g, "")
-                .replace(/\large breasts/g, "")
-                .replace(/\huge breasts/g, "")
-                .replace(/\short hair/g, "")
-                .replace(/\medium hair/g, "")
-                .replace(/\very long hair/g, "")
-                .replace(/\blonde hair/g, "")
-                .replace(/\brown hair/g, "")
-                .replace(/\black hair/g, "")
-                .replace(/\blue hair/g, "")
-                .replace(/\red hair/g, "")
-                .replace(/\green hair/g, "")
-                .replace(/\purple hair/g, "")
-                .replace(/\pink hair/g, "")
-                .replace(/\white hair/g, "")
-                .replace(/\silver hair/g, "")
-                .replace(/\orange hair/g, "")
-                .replace(/\gray hair/g, "")
-                .replace(/\yellow hair/g, "")
-                .replace(/\multicolored hair/g, "")
-                .replace(/\gradient hair/g, "")
-                .replace(/\rainbow hair/g, "")
-                .replace(/\turquoise hair/g, "")
-                .replace(/\aqua hair/g, "")
-                .replace(/\lavender hair/g, "")
-                .replace(/\indigo hair/g, "")
-                .replace(/\blue eyes/g, "")
-                .replace(/\brown eyes/g, "")
-                .replace(/\green eyes/g, "")
-                .replace(/\red eyes/g, "")
-                .replace(/\yellow eyes/g, "")
-                .replace(/\purple eyes/g, "")
-                .replace(/\pink eyes/g, "")
-                .replace(/\black eyes/g, "")
-                .replace(/\orange eyes/g, "")
-                .replace(/\gray eyes/g, "")
-                .replace(/\aqua eyes/g, "")
-                .replace(/\golden eyes/g, "")
-                .replace(/\silver eyes/g, "")
-                .replace(/\multicolored eyes/g, "")
-                .replace(/\rainbow eyes/g, "")
-                .replace(/\white eyes/g, "")
-                .replace(/\amber eyes/g, "")
-                .replace(/\turquoise eyes/g, "")
-                .replace(/\lavender eyes/g, "")
-                .replace(/\heterochromia/g, "")
-                .replace(/\long hair/g, "")
-                .replace(/\patreon/g, "")
-                .replace(/\dark skin/g, "")
-                .replace(/\sweat/g, "")
-                .replace(/\shiny/g, "")
-                .replace(/\pubic hair/g, "")
-                .replace(/\mole/g, "")
-                .replace(/\cum/g, "")
-                .replace(/\bangs/g, "")
-                .replace(/\braid/g, "")
-                .replace(/\un/g, "")
-            )
+            .map((tag) => tag.replace(/_/g, " "))
             .filter((tag) => tag.trim() !== "")
+            .filter((tag) => !unwantedWords.includes(tag))
         )
       ).join(", ");
 
