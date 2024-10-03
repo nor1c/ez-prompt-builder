@@ -333,6 +333,7 @@ function App() {
   };
 
   const [csvData, setCsvData] = useState(null);
+  const [prefix, setPrefix] = useState("ARTISTstyle"); // Default prefix
 
   // Function to handle file upload
   const handleFileUpload = (event) => {
@@ -347,7 +348,7 @@ function App() {
     reader.readAsText(file);
   };
 
-  // Function to generate .txt files and zip them
+  // Function to generate .txt files with the prepended text and zip them
   const generateZipFile = () => {
     if (!csvData) return;
 
@@ -358,9 +359,10 @@ function App() {
       const columns = row.split(",");
       const fileName = `${columns[0]}.txt`;
       const content = columns.slice(1).join(",").replace(/^"|"$/g, ""); // Remove quotes around the second column
+      const prependedContent = `${prefix}, ${content}`; // Use dynamic prefix
 
-      // Add each .txt file to the zip archive
-      zip.file(fileName, content);
+      // Add each .txt file with the prepended content to the zip archive
+      zip.file(fileName, prependedContent);
     });
 
     // Generate the zip file and download it
@@ -526,9 +528,38 @@ function App() {
       </div> */}
 
       <div className="mt-10">
-        <h1>CSV to Text Files</h1>
-        <input type="file" accept=".csv" onChange={handleFileUpload} />
-        <button onClick={generateZipFile}>Generate Text Files</button>
+        <h1 className="mb-6 text-2xl font-bold">CSV to Zipped Text Files</h1>
+
+        {/* File upload input */}
+        <input
+          type="file"
+          accept=".csv"
+          onChange={handleFileUpload}
+          className="block w-full mb-4 text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none"
+        />
+
+        {/* Prefix input */}
+        <div className="w-full max-w-md mb-4">
+          <label className="block mb-2 text-sm font-medium text-gray-700" htmlFor="prefix">
+            Prefix:
+          </label>
+          <input
+            type="text"
+            id="prefix"
+            value={prefix}
+            onChange={(e) => setPrefix(e.target.value)}
+            placeholder="Enter prefix (e.g., ARTISTstyle)"
+            className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        {/* Generate Zip Button */}
+        <button
+          onClick={generateZipFile}
+          className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        >
+          Generate Zip
+        </button>
       </div>
 
       <div className="mt-20"></div>
