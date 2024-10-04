@@ -2,6 +2,199 @@ import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { useState } from "react";
 
+const unwantedWords = [
+  "virtual youtuber",
+  "nijisanji",
+  "princess connect!",
+  "genshin impact",
+  "rating:q",
+  "rating:s",
+  "rating:e",
+  "parted ribbon",
+  "depth of field",
+  "red background",
+  "blue background",
+  "pink background",
+  "two-tone background",
+  "gradient background",
+  "white border",
+  "dark-skinned female",
+  "dark-skinned male",
+  "censored",
+  "blur censor",
+  "mosaic censoring",
+  "convenient censoring",
+  "bar censor",
+  "hair bun",
+  "shiny skin",
+  "shiny hair",
+  "simple background",
+  "white background",
+  "female pubic hair",
+  "male pubic hair",
+  "mole under eye",
+  "symbol-shaped pupils",
+  "cum in pussy",
+  "pointy ears",
+  "hair ornament",
+  "collarbone",
+  "elf",
+  "puffy nipples",
+  "inverted nipples",
+  "jewelry",
+  "hair ribbon",
+  "side braid",
+  "hairclip",
+  "french braid",
+  "absurdres",
+  "highres",
+  "commentary",
+  "commentary request",
+  "original",
+  "signature",
+  "fanbox username",
+  "username",
+  "watermark",
+  "patreon username",
+  "patreon logo",
+  "big hair",
+  "artist name",
+  "web address",
+  "small breasts",
+  "medium breasts",
+  "large breasts",
+  "huge breasts",
+  "short hair",
+  "medium hair",
+  "very long hair",
+  "blonde hair",
+  "brown hair",
+  "black hair",
+  "blue hair",
+  "red hair",
+  "green hair",
+  "purple hair",
+  "pink hair",
+  "white hair",
+  "silver hair",
+  "orange hair",
+  "gray hair",
+  "yellow hair",
+  "multicolored hair",
+  "gradient hair",
+  "rainbow hair",
+  "turquoise hair",
+  "aqua hair",
+  "lavender hair",
+  "indigo hair",
+  "blue eyes",
+  "brown eyes",
+  "green eyes",
+  "red eyes",
+  "yellow eyes",
+  "purple eyes",
+  "pink eyes",
+  "black eyes",
+  "orange eyes",
+  "gray eyes",
+  "aqua eyes",
+  "golden eyes",
+  "silver eyes",
+  "multicolored eyes",
+  "rainbow eyes",
+  "white eyes",
+  "amber eyes",
+  "turquoise eyes",
+  "lavender eyes",
+  "heterochromia",
+  "blurry background",
+  "animal ears",
+  "black bow",
+  "black bowtie",
+  "black legwear",
+  "black leotard",
+  "bowtie",
+  "brown legwear",
+  "detached collar",
+  "fake animal ears",
+  "fishnet legwear",
+  "fishnets",
+  "groin",
+  "hairband",
+  "highleg leotard",
+  "highleg",
+  "karin (azur lane)",
+  "karin ()",
+  "leotard",
+  "official alternate costume",
+  "alternate costume",
+  "pantyhose",
+  "playboy bunny",
+  "rabbit ears",
+  "rabbit tail",
+  "red bowtie",
+  "ribbon",
+  "sidelocks",
+  "strapless leotard",
+  "strapless",
+  "swimsuit",
+  "tail",
+  "tradition bowtie",
+  "white leotard",
+  "wrist cuffs",
+  "antenna hair",
+  "clothed female nude male",
+  "clothed sex",
+  "hair between eyes",
+  "hair over one eye",
+  "eyebrows visible through hair",
+  "bed sheet",
+  "on bed",
+  "sheet grab",
+  "wet hair",
+  "bathtub",
+  "bathroom",
+
+  "water",
+  "pool",
+  "ahoge",
+  "wet",
+  "underwear",
+  "interracial",
+  "pillow",
+  "bed",
+  "bow",
+  "long hair",
+  "patreon",
+  "dark skin",
+  "horizon",
+  "necklace",
+  "sweat",
+  "shiny",
+  "pubic hair",
+  "mole",
+  "cum",
+  "bangs",
+  "braid",
+  "twintails",
+  "twintail",
+  "ponytail",
+  "ejaculation",
+  "earrings",
+  "skindentation",
+  "blurry",
+  "kantai collection",
+  "blue archive",
+  "azur lane",
+  "hololive",
+  "idolmaster",
+  "DREIKOstyle",
+  "tanlines",
+  "tan",
+  "fang",
+  "un",
+];
+
 function App() {
   // const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [badTag, setBadTag] = useState<string>("");
@@ -27,106 +220,6 @@ function App() {
 
   const formatBadTag = () => {
     setBadTag((prevTag: string) => {
-      const unwantedWords = [
-        "censored",
-        "blur censor",
-        "mosaic censoring",
-        "convenient censoring",
-        "bar censor",
-        "shiny skin",
-        "shiny hair",
-        "simple background",
-        "white background",
-        "female pubic hair",
-        "male pubic hair",
-        "mole under eye",
-        "symbol-shaped pupils",
-        "cum in pussy",
-        "pointy ears",
-        "hair ornament",
-        "collarbone",
-        "elf",
-        "puffy nipples",
-        "inverted nipples",
-        "jewelry",
-        "hair ribbon",
-        "side braid",
-        "hairclip",
-        "french braid",
-        "absurdres",
-        "highres",
-        "commentary",
-        "commentary request",
-        "original",
-        "signature",
-        "fanbox username",
-        "username",
-        "watermark",
-        "patreon username",
-        "patreon logo",
-        "big hair",
-        "artist name",
-        "web address",
-        "small breasts",
-        "medium breasts",
-        "large breasts",
-        "huge breasts",
-        "short hair",
-        "medium hair",
-        "very long hair",
-        "blonde hair",
-        "brown hair",
-        "black hair",
-        "blue hair",
-        "red hair",
-        "green hair",
-        "purple hair",
-        "pink hair",
-        "white hair",
-        "silver hair",
-        "orange hair",
-        "gray hair",
-        "yellow hair",
-        "multicolored hair",
-        "gradient hair",
-        "rainbow hair",
-        "turquoise hair",
-        "aqua hair",
-        "lavender hair",
-        "indigo hair",
-        "blue eyes",
-        "brown eyes",
-        "green eyes",
-        "red eyes",
-        "yellow eyes",
-        "purple eyes",
-        "pink eyes",
-        "black eyes",
-        "orange eyes",
-        "gray eyes",
-        "aqua eyes",
-        "golden eyes",
-        "silver eyes",
-        "multicolored eyes",
-        "rainbow eyes",
-        "white eyes",
-        "amber eyes",
-        "turquoise eyes",
-        "lavender eyes",
-        "heterochromia",
-        "long hair",
-        "patreon",
-        "dark skin",
-        "sweat",
-        "shiny",
-        "pubic hair",
-        "mole",
-        "cum",
-        "bangs",
-        "braid",
-        "un",
-      ];
-
       const formatted = Array.from(
         new Set(
           prevTag
@@ -371,6 +464,35 @@ function App() {
     });
   };
 
+  // format comma separated prompts
+  const [prompt, setPrompt] = useState<string>("");
+
+  const handleFormat = async (): Promise<void> => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+
+      setPrompt(clipboardText);
+
+      let formattedPrompt = clipboardText;
+      unwantedWords.forEach((tag) => {
+        const tagWithComma = new RegExp(`\\b${tag}\\b,?`, "gi");
+        formattedPrompt = formattedPrompt.replace(tagWithComma, "");
+      });
+
+      formattedPrompt = formattedPrompt
+        .replace(/\s+/g, " ")
+        .replace(/\s*,\s*/g, ", ")
+        .replace(/^,|,$/g, "")
+        .trim();
+
+      setPrompt(formattedPrompt);
+
+      await navigator.clipboard.writeText(formattedPrompt);
+    } catch (err) {
+      console.error("Failed to read or write clipboard contents: ", err);
+    }
+  };
+
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
       <div className="mt-16 mb-12">
@@ -383,33 +505,29 @@ function App() {
           placeholder="Enter your bad tag"
         />
         <div className="right-0 w-full mt-2 space-x-2 text-center">
-          {/* <button onClick={clearTag} className="px-6 py-4 text-xs font-medium bg-red-200 rounded-md hover:bg-gray-300">
-            CLEAR
-          </button>
-          <button
-            onClick={pasteFromClipboard}
-            className="px-6 py-4 text-xs font-medium bg-blue-200 rounded-md hover:bg-gray-300"
-          >
-            PASTE
-          </button>
-          <button
-            onClick={formatBadTag}
-            className="px-6 py-4 text-xs font-medium bg-green-200 rounded-md hover:bg-gray-300"
-          >
-            FORMAT
-          </button>
-          <button
-            onClick={copyFormattedBadTag}
-            className="px-6 py-4 text-xs font-medium bg-blue-300 rounded-md hover:bg-gray-300"
-          >
-            COPY
-          </button> */}
-
           <button
             onClick={doAll}
-            className="px-6 py-4 text-xs font-medium text-white bg-purple-500 rounded-md hover:bg-purple-700"
+            className="px-4 py-2 text-xs font-medium text-white bg-purple-500 rounded-md hover:bg-purple-700"
           >
-            BOOM
+            FORMAT & COPY
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full mx-auto mb-10">
+        <h3 className="mb-2 text-lg font-bold">Prompt Formatter</h3>
+        <textarea
+          className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={5}
+        />
+        <div className="right-0 w-full space-x-2 text-center">
+          <button
+            className="px-4 py-2 text-xs font-medium text-white bg-purple-500 rounded-md hover:bg-purple-700"
+            onClick={handleFormat}
+          >
+            FORMAT & COPY
           </button>
         </div>
       </div>
