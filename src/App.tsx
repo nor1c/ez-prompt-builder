@@ -425,16 +425,18 @@ function App() {
     return text;
   };
 
-  const [csvData, setCsvData] = useState(null);
-  const [prefix, setPrefix] = useState("ARTISTstyle"); // Default prefix
+  const [csvData, setCsvData] = useState<string | null>(null);
+  const [prefix, setPrefix] = useState<string>("ARTISTstyle"); // Default prefix
 
   // Function to handle file upload
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
     const reader = new FileReader();
 
-    reader.onload = (e) => {
-      const text = e.target.result;
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const text = e.target?.result as string;
       setCsvData(text);
     };
 
