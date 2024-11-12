@@ -1,6 +1,12 @@
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
+import piexif from "piexifjs";
 import { useState } from "react";
+
+interface CleanedImage {
+  name: string;
+  url: string;
+}
 
 const unwantedWords = [
   "virtual youtuber",
@@ -154,6 +160,12 @@ const unwantedWords = [
   "wet hair",
   "bathtub",
   "bathroom",
+  "alternate hairstyle",
+  "wavy hair",
+  "hair down",
+  "holding",
+  "star (symbol)",
+  "star-shaped pupils",
 
   "water",
   "pool",
@@ -247,6 +259,7 @@ function App() {
     copyFormattedBadTag();
   };
 
+  // exif cleaner (single)
   const [cleanedImage, setCleanedImage] = useState<string | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -254,40 +267,53 @@ function App() {
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = function () {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+        const dataUrl = e.target?.result as string;
 
-          if (ctx) {
-            // Set canvas size to match the image
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            // Draw the image onto the canvas (this will remove metadata)
-            ctx.drawImage(img, 0, 0);
-
-            // Convert canvas back to an image file, stripping all metadata
-            canvas.toBlob(
-              function (blob) {
-                if (blob) {
-                  const cleanedImageURL = URL.createObjectURL(blob);
-                  setCleanedImage(cleanedImageURL);
-                }
-              },
-              "image/png",
-              1.0
-            );
+        if (file.type === "image/jpeg") {
+          // If JPEG, remove EXIF metadata with piexif
+          try {
+            const cleanedDataUrl = piexif.remove(dataUrl);
+            setCleanedImage(cleanedDataUrl);
+          } catch (error) {
+            console.error("Error removing EXIF from JPEG:", error);
           }
-        };
+        } else {
+          // For non-JPEG formats, use canvas to remove metadata
+          const img = new Image();
+          img.src = dataUrl;
+          img.onload = function () {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            if (ctx) {
+              // Set canvas size to match the image
+              canvas.width = img.width;
+              canvas.height = img.height;
+
+              // Draw the image onto the canvas (this will strip metadata)
+              ctx.drawImage(img, 0, 0);
+
+              // Convert canvas to a new data URL, effectively stripping metadata
+              canvas.toBlob(
+                function (blob) {
+                  if (blob) {
+                    const cleanedImageURL = URL.createObjectURL(blob);
+                    setCleanedImage(cleanedImageURL);
+                  }
+                },
+                "image/png",
+                1.0
+              );
+            }
+          };
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
   // batch exif cleaner
-  const [cleanedImages, setCleanedImages] = useState<{ name: string; url: string }[]>([]);
+  const [cleanedImages, setCleanedImages] = useState<CleanedImage[]>([]);
 
   const handleFilesSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -298,37 +324,50 @@ function App() {
     }
   };
 
-  const processImage = (file: File): Promise<{ name: string; url: string }> => {
+  const processImage = (file: File): Promise<CleanedImage> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = function (e) {
-        const img = new Image();
-        img.src = e.target?.result as string;
-        img.onload = function () {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+        const originalDataUrl = e.target?.result as string;
 
-          if (ctx) {
-            // Set canvas size to match the image
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            // Draw the image onto the canvas (this will remove metadata)
-            ctx.drawImage(img, 0, 0);
-
-            // Convert canvas back to an image file, stripping all metadata
-            canvas.toBlob(
-              function (blob) {
-                if (blob) {
-                  const cleanedImageURL = URL.createObjectURL(blob);
-                  resolve({ name: file.name, url: cleanedImageURL });
-                }
-              },
-              "image/png",
-              1.0
-            );
+        if (file.type === "image/jpeg") {
+          // For JPEG images, use piexifjs to remove EXIF metadata
+          try {
+            const cleanedDataUrl = piexif.remove(originalDataUrl);
+            resolve({ name: file.name, url: cleanedDataUrl });
+          } catch (error) {
+            console.error("Error removing EXIF from JPEG:", error);
           }
-        };
+        } else {
+          // For non-JPEG images, use canvas to remove metadata
+          const img = new Image();
+          img.src = originalDataUrl;
+          img.onload = function () {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+
+            if (ctx) {
+              // Set canvas size to match the image
+              canvas.width = img.width;
+              canvas.height = img.height;
+
+              // Draw the image onto the canvas to strip metadata
+              ctx.drawImage(img, 0, 0);
+
+              // Convert canvas back to an image file, effectively removing metadata
+              canvas.toBlob(
+                function (blob) {
+                  if (blob) {
+                    const cleanedImageURL = URL.createObjectURL(blob);
+                    resolve({ name: file.name, url: cleanedImageURL });
+                  }
+                },
+                "image/png",
+                1.0
+              );
+            }
+          };
+        }
       };
       reader.readAsDataURL(file);
     });
@@ -495,6 +534,69 @@ function App() {
     }
   };
 
+  // Image cropper
+  const [images, setImages] = useState<FileWithPreview[]>([]);
+  const [croppedImages, setCroppedImages] = useState<Blob[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Handle file input change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []).map((file) => {
+      const fileWithPreview = file as FileWithPreview;
+      fileWithPreview.preview = URL.createObjectURL(file);
+      return fileWithPreview;
+    });
+    setImages(files);
+    setCroppedImages([]);
+  };
+
+  // Function to crop an image to square based on the center
+  const cropImageToCenterSquare = (image: File): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(image);
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const size = Math.min(img.width, img.height);
+        canvas.width = 1024;
+        canvas.height = 1024;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const sx = (img.width - size) / 2;
+        const sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 1024, 1024);
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+        }, "image/jpeg");
+      };
+    });
+  };
+
+  // Function to start cropping all images and create a ZIP file
+  const handleCropAndZip = async () => {
+    setIsProcessing(true);
+
+    const zip = new JSZip();
+    const croppedPromises = images.map(async (image, index) => {
+      const croppedBlob = await cropImageToCenterSquare(image);
+      const fileName = `cropped_image_${index + 1}.jpg`;
+      zip.file(fileName, croppedBlob);
+      return croppedBlob;
+    });
+
+    const croppedImagesArray = await Promise.all(croppedPromises);
+    setCroppedImages(croppedImagesArray);
+
+    zip.generateAsync({ type: "blob" }).then((content) => {
+      saveAs(content, "cropped_images.zip");
+      setIsProcessing(false);
+    });
+  };
+
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
       <div className="mt-16 mb-12">
@@ -646,6 +748,7 @@ function App() {
           <PromptCategory onEndCategoryClick={handleEndCategoryClick} selectedItems={selectedItems} />
         </div>
       </div> */}
+      <hr className="mt-10 mb-10 border-red-500" />
 
       <div className="mt-10">
         <h1 className="mb-6 text-2xl font-bold">CSV to Zipped Text Files</h1>
@@ -680,6 +783,24 @@ function App() {
         >
           Generate Zip
         </button>
+      </div>
+
+      <hr className="mt-10 mb-10 border-red-500" />
+
+      {/* Image cropper */}
+      <div>
+        <label className="block mt-10 mb-2 text-base font-medium text-gray-900 dark:text-white">Batch Resizer</label>
+
+        <div>
+          <input type="file" accept="image/*" multiple onChange={handleFileChange} />
+          <button
+            onClick={handleCropAndZip}
+            disabled={isProcessing || images.length === 0}
+            className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            {isProcessing ? "Processing..." : "CROP IT"}
+          </button>
+        </div>
       </div>
 
       <div className="mt-20"></div>
