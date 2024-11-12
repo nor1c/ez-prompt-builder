@@ -535,67 +535,67 @@ function App() {
   };
 
   // Image cropper
-  const [images, setImages] = useState<FileWithPreview[]>([]);
-  const [croppedImages, setCroppedImages] = useState<Blob[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  // const [images, setImages] = useState<FileWithPreview[]>([]);
+  // const [setCroppedImages] = useState<Blob[]>([]);
+  // const [isProcessing, setIsProcessing] = useState(false);
 
-  // Handle file input change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).map((file) => {
-      const fileWithPreview = file as FileWithPreview;
-      fileWithPreview.preview = URL.createObjectURL(file);
-      return fileWithPreview;
-    });
-    setImages(files);
-    setCroppedImages([]);
-  };
+  // // Handle file input change
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = Array.from(e.target.files || []).map((file) => {
+  //     const fileWithPreview = file as FileWithPreview;
+  //     fileWithPreview.preview = URL.createObjectURL(file);
+  //     return fileWithPreview;
+  //   });
+  //   setImages(files);
+  //   setCroppedImages([]);
+  // };
 
-  // Function to crop an image to square based on the center
-  const cropImageToCenterSquare = (image: File): Promise<Blob> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = URL.createObjectURL(image);
+  // // Function to crop an image to square based on the center
+  // const cropImageToCenterSquare = (image: File): Promise<Blob> => {
+  //   return new Promise((resolve) => {
+  //     const img = new Image();
+  //     img.src = URL.createObjectURL(image);
 
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const size = Math.min(img.width, img.height);
-        canvas.width = 1024;
-        canvas.height = 1024;
+  //     img.onload = () => {
+  //       const canvas = document.createElement("canvas");
+  //       const size = Math.min(img.width, img.height);
+  //       canvas.width = 1024;
+  //       canvas.height = 1024;
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+  //       const ctx = canvas.getContext("2d");
+  //       if (!ctx) return;
 
-        const sx = (img.width - size) / 2;
-        const sy = (img.height - size) / 2;
-        ctx.drawImage(img, sx, sy, size, size, 0, 0, 1024, 1024);
+  //       const sx = (img.width - size) / 2;
+  //       const sy = (img.height - size) / 2;
+  //       ctx.drawImage(img, sx, sy, size, size, 0, 0, 1024, 1024);
 
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-        }, "image/jpeg");
-      };
-    });
-  };
+  //       canvas.toBlob((blob) => {
+  //         if (blob) resolve(blob);
+  //       }, "image/jpeg");
+  //     };
+  //   });
+  // };
 
-  // Function to start cropping all images and create a ZIP file
-  const handleCropAndZip = async () => {
-    setIsProcessing(true);
+  // // Function to start cropping all images and create a ZIP file
+  // const handleCropAndZip = async () => {
+  //   setIsProcessing(true);
 
-    const zip = new JSZip();
-    const croppedPromises = images.map(async (image, index) => {
-      const croppedBlob = await cropImageToCenterSquare(image);
-      const fileName = `cropped_image_${index + 1}.jpg`;
-      zip.file(fileName, croppedBlob);
-      return croppedBlob;
-    });
+  //   const zip = new JSZip();
+  //   const croppedPromises = images.map(async (image, index) => {
+  //     const croppedBlob = await cropImageToCenterSquare(image);
+  //     const fileName = `cropped_image_${index + 1}.jpg`;
+  //     zip.file(fileName, croppedBlob);
+  //     return croppedBlob;
+  //   });
 
-    const croppedImagesArray = await Promise.all(croppedPromises);
-    setCroppedImages(croppedImagesArray);
+  //   const croppedImagesArray = await Promise.all(croppedPromises);
+  //   setCroppedImages(croppedImagesArray);
 
-    zip.generateAsync({ type: "blob" }).then((content) => {
-      saveAs(content, "cropped_images.zip");
-      setIsProcessing(false);
-    });
-  };
+  //   zip.generateAsync({ type: "blob" }).then((content) => {
+  //     saveAs(content, "cropped_images.zip");
+  //     setIsProcessing(false);
+  //   });
+  // };
 
   return (
     <div className="w-full px-2 mx-auto mt-10 text-sm md:px-10 md:text-sm">
@@ -788,7 +788,7 @@ function App() {
       <hr className="mt-10 mb-10 border-red-500" />
 
       {/* Image cropper */}
-      <div>
+      {/* <div>
         <label className="block mt-10 mb-2 text-base font-medium text-gray-900 dark:text-white">Batch Resizer</label>
 
         <div>
@@ -801,7 +801,7 @@ function App() {
             {isProcessing ? "Processing..." : "CROP IT"}
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="mt-20"></div>
     </div>
